@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import la.bean.FortuneBean;
+
 /**
  * Servlet implementation class FortuneServlet
  */
@@ -20,6 +22,14 @@ public class FortuneServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		int month = 9;
+		String item = "タオル";
+		String color = "白";
+		int rank = 6;
+		// FortuneBeanをインスタンス化
+		FortuneBean bean = new FortuneBean(month, item, color, rank);
+		// リクエストスコープに登録
+		request.setAttribute("fortune", bean);
 		// 画面遷移
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/fortune.jsp");
 		dispatcher.forward(request, response);
