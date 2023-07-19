@@ -27,18 +27,5 @@
 			<li>順位：${fortune.rank}位</li>
 		</ul>
 	</c:if>
-<%-- 	<% --%>
-<!--  		FortuneBean fortune = (FortuneBean)request.getAttribute("fortune"); -->
-<!--  		if (fortune != null) { -->
-<%-- 	%> --%>
-<%-- 		<p><%= fortune.getMonth() %>月の運勢は、、、</p> --%>
-<!-- 		<ul> -->
-<%-- 			<li>ラッキーカラー：<%= fortune.getColor() %></li> --%>
-<%-- 			<li>ラッキーアイテム：<%= fortune.getItem() %></li> --%>
-<%-- 			<li>順位：<%= fortune.getRank() %>位</li> --%>
-<!-- 		</ul> -->
-<%-- 	<%			 --%>
-<!--  		} -->
-<%-- 	%> --%>
 </body>
 </html>
