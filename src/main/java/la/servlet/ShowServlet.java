@@ -1,10 +1,9 @@
 package la.servlet;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.PrintWriter;
 import java.util.List;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,44 +12,22 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * Servlet implementation class BbsServlet
+ * Servlet implementation class ShowServlet
  */
-@WebServlet("/BbsServlet2")
-public class BbsServlet2 extends HttpServlet {
+@WebServlet("/ShowServlet")
+public class ShowServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
-       
+
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// セッションの開始
-		HttpSession session = request.getSession(true);
-		
+		HttpSession session = request.getSession(false);
 		// セッションからメッセージリストを取得
 		@SuppressWarnings("unchecked")
 		List<String> messages = (List<String>) session.getAttribute("messages");
-		// メッセージリストの有無を判定
-		if (messages == null) {
-			// メッセージリストがない場合：メッセージをはじめてセッションに登録する場合は空のリストを作成
-			messages = new ArrayList<String>();
-			// 空リストをセッションに登録
-			session.setAttribute("messages", messages);
-		}
 		
-		
-		// リクエストパラメータの文字コード設定
-		request.setCharacterEncoding("utf-8");
-		// 処理に必要なリクエストパラメータを取得
-		String message = request.getParameter("message");
-		String name = request.getParameter("name");
-		
-		// 出力用文字列を生成
-		String output = name + "："+ message;
-		// メッセージリストに追加
-		messages.add(output);
-		
-		/*
 		// レスポンスヘッダの設定
 		response.setContentType("text/html; charset=utf-8");
 		// プリントライタの取得
@@ -75,17 +52,13 @@ public class BbsServlet2 extends HttpServlet {
 		}
 			
 		out.println("</body></html>");
-		*/
-		
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/ShowServlet");
-		dispatcher.forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// ここではdoGetメソッドに処理を丸投げするようにしているが、doPostに処理を実装しても構わない。
+		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 
