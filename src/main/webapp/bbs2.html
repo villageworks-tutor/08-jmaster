@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>掲示板 ─ JM21</title>
+</head>
+<body>
+	<form action="/jmaster/BbsServlet2" method="post">
+		名前：<br />
+		<input type="text" name="name" /><br />
+		メッセージ：<br />
+		<textarea name="message" rows="5" cols="36"></textarea><br />
+		<input type="hidden" name="action" value="write" />
+		<input type="submit" value="書き込み" />
+	</form>
+	<hr />
+</body>
+</html>
