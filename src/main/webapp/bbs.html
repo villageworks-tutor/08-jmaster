@@ -5,8 +5,10 @@
 	<title>掲示板 ─ JM10</title>
 </head>
 <body>
-	メッセージ：<br />
 	<form action="/jmaster/BbsServlet" method="post">
+		名前：<br />
+		<input type="text" name="name" /><br />
+		メッセージ：<br />
 		<textarea name="message" rows="5" cols="36"></textarea><br />
 		<input type="submit" value="書き込み" />
 	</form>

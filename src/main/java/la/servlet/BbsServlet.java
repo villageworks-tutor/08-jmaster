@@ -29,9 +29,11 @@ public class BbsServlet extends HttpServlet {
 		request.setCharacterEncoding("utf-8");
 		// リクエストパラメータを取得
 		String message = request.getParameter("message");
-		
+		String name = request.getParameter("name");
+		// 出力用文字列を生成
+		String output = name + "："+ message;
 		// メッセージリストに追加
-		messages.add(message);
+		messages.add(output);
 		
 		// レスポンスヘッダの設定
 		response.setContentType("text/html; charset=utf-8");
@@ -39,8 +41,10 @@ public class BbsServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		out.println("<!DOCTYPE html>");
 		out.println("<html lang=\"ja\"><head><title>掲示板 ─ JM10</title></head><body>");
-		out.println("\tメッセージ：<br />");
 		out.println("\t<form action=\"#\" method=\"post\">");
+		out.println("\t\t名前：<br />");
+		out.println("\t\t<input type=\"text\" name=\"name\" /><br />");
+		out.println("\t\tメッセージ：<br />");
 		out.println("\t\t<textarea name=\"message\" rows=\"5\" cols=\"36\"></textarea><br />");
 		out.println("\t\t<input type=\"submit\" value=\"書き込み\" />");
 		out.println("\t</form>");
