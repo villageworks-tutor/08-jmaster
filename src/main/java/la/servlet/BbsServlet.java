@@ -31,7 +31,7 @@ public class BbsServlet extends HttpServlet {
 		request.setCharacterEncoding("utf-8");
 		// リクエストパラメータ（処理分岐用actionキー）を取得
 		String action = request.getParameter("action");
-		
+		boolean isError = false;
 		// 取得したactionキーの値により処理を分岐：switch-case文で表現してもかまわない（switch文のほうが可読性は上がるかもしれないが、ここでは慣習的な表現を採用した）
 		if (action.equals("write")) {
 			// 処理に必要なリクエストパラメータを取得
@@ -54,6 +54,9 @@ public class BbsServlet extends HttpServlet {
 			int row = Integer.parseInt(request.getParameter("row"));
 			// 該当するメッセージをメッセージリストから削除
 			messages.remove(row - 1);
+		} else {
+			// actionキーが「write」「delete」以外の場合はいっかつしてエラー
+			isError = true;
 		}
 		
 		// レスポンスヘッダの設定
@@ -62,24 +65,31 @@ public class BbsServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		out.println("<!DOCTYPE html>");
 		out.println("<html lang=\"ja\"><head><title>掲示板 ─ JM10</title></head><body>");
-		out.println("\t<form action=\"/jmaster/BbsServlet\" method=\"post\">");
-		out.println("\t\t名前：<br />");
-		out.println("\t\t<input type=\"text\" name=\"name\" /><br />");
-		out.println("\t\tメッセージ：<br />");
-		out.println("\t\t<textarea name=\"message\" rows=\"5\" cols=\"36\"></textarea><br />");
-		out.println("\t\t<input type=\"submit\" value=\"書き込み\" />");
-		out.println("\t\t<input type=\"hidden\" name=\"action\" value=\"write\" />");
-		out.println("\t</form>");
-		out.println("\t<hr />");
 		
-		// メッセージリストの内容を表示
-		int rows = 0; // 行カウンタ
-		for (String message : messages) {
-			rows++;
-			out.println(message + "［<a href=\"/jmaster/BbsServlet?action=delete&row=" + rows + "\">削除</a>］<br />");
+		if (isError) {
+			// エラーが有る場合
+			out.println("操作エラー<br />");
+			out.println("<a href=\"/jmaster/bbs.html\">戻る</a>");
+		} else {
+			out.println("\t<form action=\"/jmaster/BbsServlet\" method=\"post\">");
+			out.println("\t\t名前：<br />");
+			out.println("\t\t<input type=\"text\" name=\"name\" /><br />");
+			out.println("\t\tメッセージ：<br />");
+			out.println("\t\t<textarea name=\"message\" rows=\"5\" cols=\"36\"></textarea><br />");
+			out.println("\t\t<input type=\"submit\" value=\"書き込み\" />");
+			out.println("\t\t<input type=\"hidden\" name=\"action\" value=\"write\" />");
+			out.println("\t</form>");
 			out.println("\t<hr />");
+			
+			// メッセージリストの内容を表示
+			int rows = 0; // 行カウンタ
+			for (String message : messages) {
+				rows++;
+				out.println(message + "［<a href=\"/jmaster/BbsServlet?action=delete&row=" + rows + "\">削除</a>］<br />");
+				out.println("\t<hr />");
+			}
 		}
-		
+			
 		out.println("</body></html>");
 	}
 
