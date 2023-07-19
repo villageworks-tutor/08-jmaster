@@ -1,6 +1,7 @@
 <%@page import="la.bean.FortuneBean"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -18,18 +19,26 @@
 		月
 		<input type="submit" value="占ってみる" />
 	</form>
-	<%
-		FortuneBean fortune = (FortuneBean)request.getAttribute("fortune");
-		if (fortune != null) {
-	%>
-		<p><%= fortune.getMonth() %>月の運勢は、、、</p>
+	<c:if test="${!empty fortune}">
+		<p>${fortune.month}月の運勢は、、、</p>
 		<ul>
-			<li>ラッキーカラー：<%= fortune.getColor() %></li>
-			<li>ラッキーアイテム：<%= fortune.getItem() %></li>
-			<li>順位：<%= fortune.getRank() %>位</li>
+			<li>ラッキーカラー：${fortune.color}</li>
+			<li>ラッキーアイテム：${fortune.item}</li>
+			<li>順位：${fortune.rank}位</li>
 		</ul>
-	<%			
-		}
-	%>
+	</c:if>
+<%-- 	<% --%>
+<!--  		FortuneBean fortune = (FortuneBean)request.getAttribute("fortune"); -->
+<!--  		if (fortune != null) { -->
+<%-- 	%> --%>
+<%-- 		<p><%= fortune.getMonth() %>月の運勢は、、、</p> --%>
+<!-- 		<ul> -->
+<%-- 			<li>ラッキーカラー：<%= fortune.getColor() %></li> --%>
+<%-- 			<li>ラッキーアイテム：<%= fortune.getItem() %></li> --%>
+<%-- 			<li>順位：<%= fortune.getRank() %>位</li> --%>
+<!-- 		</ul> -->
+<%-- 	<%			 --%>
+<!--  		} -->
+<%-- 	%> --%>
 </body>
 </html>
