@@ -20,6 +20,11 @@ public class BbsServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// リクエストパラメータの文字コード設定
+		request.setCharacterEncoding("utf-8");
+		// リクエストパラメータを取得
+		String message = request.getParameter("message");
+		
 		// レスポンスヘッダの設定
 		response.setContentType("text/html; charset=utf-8");
 		// プリントライタの取得
@@ -28,10 +33,15 @@ public class BbsServlet extends HttpServlet {
 		out.println("<html lang=\"ja\"><head><title>掲示板 ─ JM10</title></head><body>");
 		out.println("\tメッセージ：<br />");
 		out.println("\t<form action=\"#\" method=\"post\">");
-		out.println("\t\t<textarea nname=\"message\" rows=\"5\" cols=\"36\"></textarea><br />");
+		out.println("\t\t<textarea name=\"message\" rows=\"5\" cols=\"36\"></textarea><br />");
 		out.println("\t\t<input type=\"submit\" value=\"書き込み\" />");
 		out.println("\t</form>");
 		out.println("\t<hr />");
+		
+		// 取得したリクエストパラメータの表示
+		out.println(message + "<br />");
+		out.println("\t<hr />");
+		
 		out.println("</body></html>");
 	}
 
