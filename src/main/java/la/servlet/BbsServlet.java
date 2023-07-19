@@ -2,6 +2,8 @@ package la.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,6 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/BbsServlet")
 public class BbsServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
+	// メッセージを蓄積しておくメッセージリスト
+	List<String> messages = new ArrayList<String>();
        
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -24,6 +29,9 @@ public class BbsServlet extends HttpServlet {
 		request.setCharacterEncoding("utf-8");
 		// リクエストパラメータを取得
 		String message = request.getParameter("message");
+		
+		// メッセージリストに追加
+		messages.add(message);
 		
 		// レスポンスヘッダの設定
 		response.setContentType("text/html; charset=utf-8");
@@ -38,9 +46,11 @@ public class BbsServlet extends HttpServlet {
 		out.println("\t</form>");
 		out.println("\t<hr />");
 		
-		// 取得したリクエストパラメータの表示
-		out.println(message + "<br />");
-		out.println("\t<hr />");
+		// メッセージリストの内容を表示
+		for (String comment : messages) {
+			out.println(comment + "<br />");
+			out.println("\t<hr />");
+		}
 		
 		out.println("</body></html>");
 	}
