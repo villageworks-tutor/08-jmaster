@@ -37,14 +37,41 @@ public class WordServlet extends HttpServlet {
 		
 		// リクエストパラメータの文字コードを設定
 		request.setCharacterEncoding("utf-8");
-		// リクエストパラメータを取得
-		String english = request.getParameter("english");
-		String japanese = request.getParameter("japanese");
-		WordBean bean = new WordBean(japanese, english);
-		dictionary.add(bean);
-		
+		// リクエストパラメータを取得：処理分岐用actionキーの取得
+		String action = request.getParameter("action");
+		// 遷移先URLの初期化
+		String nextPage = "";
+		if (action.equals("showRegist")) {
+			// 遷移先URLの設定
+			nextPage = "/registword.jsp";
+		} else if (action.equals("registWord")) {
+			// リクエストパラメータを取得
+			String english = request.getParameter("english");
+			String japanese = request.getParameter("japanese");
+			// 登録する単語のインスタンス化
+			WordBean bean = new WordBean(japanese, english);
+			// 単語の登録
+			dictionary.add(bean);
+			// 遷移先URLの設定
+			nextPage = "/listWord.jsp";
+		} else if (action.equals("showSearch")) {
+			// 遷移先URLの設定
+			nextPage = "/searchword.jsp";
+		}
 		// 画面遷移
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/listWord.jsp");
+		gotoPage(request, response, nextPage);
+	}
+
+	/**
+	 * 指定されたURLに遷移する
+	 * @param request HttpServletRequestオブジェクト
+	 * @param response HttpServletresponseオブジェクト
+	 * @param nextPage 遷移先URL
+	 * @throws IOException 
+	 * @throws ServletException 
+	 */
+	private void gotoPage(HttpServletRequest request, HttpServletResponse response, String nextPage) throws ServletException, IOException {
+		RequestDispatcher dispatcher = request.getRequestDispatcher(nextPage);
 		dispatcher.forward(request, response);
 	}
 
