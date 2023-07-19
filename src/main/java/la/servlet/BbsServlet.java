@@ -2,6 +2,8 @@ package la.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +32,16 @@ public class BbsServlet extends HttpServlet {
 		// リクエストパラメータを取得
 		String message = request.getParameter("message");
 		String name = request.getParameter("name");
+		
+		// 書き込まれた日時お取得
+		LocalDateTime now = LocalDateTime.now();
+		// 日時の書式パターンを設定：「yyyy/MM/dd HH:mm:ss」形式
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"); 
+		// 書き込まれた日時の文字列を取得
+		String nowString = formatter.format(now);
+		
 		// 出力用文字列を生成
-		String output = name + "："+ message;
+		String output = nowString + "　" + name + "："+ message;
 		// メッセージリストに追加
 		messages.add(output);
 		
