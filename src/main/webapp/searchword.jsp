@@ -12,6 +12,7 @@
 	<hr />
 	<form action="/jmaster/WordServlet" method="post">
 		キーワード：<input type="text" name="keyword" /><br />
+		<input type="hidden" name="action" value="search" />
 		<input type="submit" value="検索" />
 	</form>
 </body>

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import la.bean.WordBean;
+import la.model.WordModel;
 
 /**
  * Servlet implementation class WordServlet
@@ -57,6 +58,14 @@ public class WordServlet extends HttpServlet {
 		} else if (action.equals("showSearch")) {
 			// 遷移先URLの設定
 			nextPage = "/searchword.jsp";
+		} else if (action.equals("search")) {
+			// リクエストパラメータを取得
+			String keyword = request.getParameter("keyword");
+			List<WordBean> results = WordModel.searchByKeyword(keyword, dictionary);
+			// 検索結果をリクエストスコープに登録
+			request.setAttribute("dictionary", results);
+			// 遷移先URLの設定
+			nextPage = "/listWord.jsp";
 		}
 		// 画面遷移
 		gotoPage(request, response, nextPage);
