@@ -3,6 +3,7 @@ package la.jdbc;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -19,19 +20,13 @@ public class jdbc2 {
 	
 	public static void main(String[] args) {
 		// 実行するSQLの設定
-		String sql = "INSERT INTO emp VALUES (?, ?, ?, ?)";
+		String sql = "SELECT * FROM emp WHERE name LIKE ?";
 		
 		// JDBCドライバをロード
 		try (Scanner scanner = new Scanner(System.in);) {
 			// ユーザからの入力値を取得
-			System.out.print("コードを入力してください：");
-			int code = scanner.nextInt();
 			System.out.print("名前を入力してください：");
 			String name = scanner.next();
-			System.out.print("年齢を入力してください：");
-			int age = scanner.nextInt();
-			System.out.print("電話番号を入力してください：");
-			String tel = scanner.next();
 			
 			Class.forName(DB_DRIVER);
 			try (// データベース接続文字列の取得
@@ -40,16 +35,22 @@ public class jdbc2 {
 				 PreparedStatement pstmt = con.prepareStatement(sql);
 				) {
 				// プレースホルダにデータをバインド
-				pstmt.setInt(1, code);
-				pstmt.setString(2, name);
-				pstmt.setInt(3, age);
-				pstmt.setString(4, tel);
-				
-				// SQLを実行
-				int row = pstmt.executeUpdate();
-				
-				// メッセージを表示
-				System.out.println(row + "件、レコードを登録しました。");
+				pstmt.setString(1, "%" + name + "%");
+				try (//SQLの実行と結果セットの取得
+					 ResultSet rs = pstmt.executeQuery();
+					){
+					// 結果セットの表示
+					while (rs.next()) {
+						System.out.print(rs.getInt("code"));
+						System.out.print("\t");
+						System.out.print(rs.getString("name"));
+						System.out.print("\t");
+						System.out.print(rs.getInt("age"));
+						System.out.print("\t");
+						System.out.print(rs.getString("tel"));
+						System.out.print("\n");
+					}
+				}
 				
 			} catch (SQLException e) {
 				e.printStackTrace();
