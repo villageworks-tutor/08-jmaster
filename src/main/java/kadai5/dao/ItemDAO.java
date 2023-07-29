@@ -168,6 +168,11 @@ public class ItemDAO {
 		}
 	}
 
+	/**
+	 * 指定された商品番号の商品を削除する
+	 * @param code 削除対象商品の商品番号
+	 * @throws DAOException
+	 */
 	public void delete(int code) throws DAOException {
 		// 実行するSQLの設定
 		String sql = "DELETE FROM item WHERE code = ?";
@@ -186,6 +191,66 @@ public class ItemDAO {
 			throw new DAOException("レコードの削除に失敗しました。");
 		}
 		
+	}
+
+	/**
+	 * 指定した商品番号の商品を取得する
+	 * @param code 取得対象の商品の商品番号
+	 * @return ItemBean | null 商品番号に対応した商品がある場合はItemBeanのいインスタンス、それ以外はnull
+	 * @throws DAOException
+	 */
+	public ItemBean findByPrimaryKey(int code) throws DAOException {
+		// 実行するSQLの設定
+		String sql = "SELECT * FROM item WHERE code = ?";
+		try (// データベースに接続
+			 Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+			 // SQL実行オブジェクトを取得
+			 PreparedStatement pstmt = con.prepareStatement(sql);
+			) {
+			// プレースホルダにデータをバインド
+			pstmt.setInt(1, code);
+			try (// SQLの実行と結果セットの取得
+				 ResultSet rs = pstmt.executeQuery();) {
+				// 結果セットからインスタンスを生成
+				ItemBean bean = null;
+				if (rs.next()) {
+					String name =  rs.getString("name");
+					int price = rs.getInt("price");
+					bean = new ItemBean(code, name, price);
+				}
+				return bean;
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの取得に失敗しました。");
+		}
+	}
+
+	/**
+	 * 指定された商品を更新する
+	 * @param item 更新する商品
+	 * @throws DAOException
+	 */
+	public void update(ItemBean item) throws DAOException {
+		// 実行するSQLの設定
+		String sql = "UPDATE item SET name = ?, price = ? WHERE code = ?";
+		try (// データベースに接続
+			 Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+			 // SQL実行オブジェクトを取得
+			 PreparedStatement pstmt = con.prepareStatement(sql);
+			) {
+			// プレースホルダにデータをバインド
+			pstmt.setString(1, item.getName());
+			pstmt.setInt(2, item.getPrice());
+			pstmt.setInt(3, item.getCode());
+			// SQLを実行
+			pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの更新に失敗しました。");
+		}
 	}
 	
 	

@@ -104,6 +104,25 @@ public class ItemServlet2 extends HttpServlet {
 				// 遷移先URLを設定して画面遷移
 				String nextPage = "/showItem2.jsp";
 				this.gotoPage(request, response, nextPage);
+			} else if (action.equals("update")) {
+				// 商品の価格を修正する場合
+				// リクエストパラメータを取得
+				int code = Integer.parseInt(request.getParameter("code"));
+				int price = Integer.parseInt(request.getParameter("price"));
+				// モデルを使って取得した商品番号の商品を取得
+				ItemDAO dao  = new ItemDAO();
+				ItemBean item = dao.findByPrimaryKey(code);
+				// 取得した商品の価格を変更
+				item.setPrice(price);
+				// 商品を更新
+				dao.update(item);
+				// 商品一覧リストを取得
+				List<ItemBean> list = dao.findAll();
+				// 商品一覧リストをスコープに登録
+				request.setAttribute("items", list);
+				// 遷移先URLを設定して画面遷移
+				String nextPage = "/showItem2.jsp";
+				this.gotoPage(request, response, nextPage);
 			} else {
 				request.setAttribute("message", "正しく操作してください。");
 				this.gotoPage(request, response, "/errInternal.jsp");

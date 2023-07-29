@@ -18,3 +18,7 @@
 削除：商品番号<input type="text" name="code" size="5" />番の商品を<input type="submit" value="削除" />
 <input type="hidden" name="action" value="delete" />
 </form>
+<form action="ItemServlet2" method="post">
+修正：商品番号<input type="text" name="code" size="5" />番の値段を<input type="text" name="price" size="5" />に<input type="submit" value="変更" />
+<input type="hidden" name="action" value="update" />
+</form>
