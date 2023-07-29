@@ -25,16 +25,23 @@ public class ItemServlet2 extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// リクエストパラメータの解析は特になし：送信データがないため
 		try {
-			// モデルを使って全商品を取得
-			ItemDAO dao = new ItemDAO();
-			List<ItemBean> list = dao.findAll();
-			// リストをスコープに入れて画面遷移
-			request.setAttribute("items", list);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/showItem2.jsp");
-			// 商品一覧画面に遷移
-			dispatcher.forward(request, response);
+			// リクエストパラメータの文字コード設定
+			request.setCharacterEncoding("utf-8");
+			// 処理分岐スイッチ用リクエストパラメータactionキーの取得
+			String  action = request.getParameter("action");
+			// パラメータの解析：actionキーによる処理の分岐
+			if (action == null || action.isEmpty()) {
+				// 初期表示または何らかのエラーがあった場合の強制表示：モデルを使って全商品を取得
+				ItemDAO dao = new ItemDAO();
+				List<ItemBean> list = dao.findAll();
+				// リストをスコープに入れて画面遷移
+				request.setAttribute("items", list);
+				RequestDispatcher dispatcher = request.getRequestDispatcher("/showItem2.jsp");
+				// 商品一覧画面に遷移
+				dispatcher.forward(request, response);
+			}
+			
 		} catch (DAOException e) {
 			e.printStackTrace();
 			// スコープにメッセージを登録
