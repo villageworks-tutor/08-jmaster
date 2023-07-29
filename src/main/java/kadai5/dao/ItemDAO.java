@@ -16,12 +16,43 @@ import kadai5.bean.ItemBean;
 public class ItemDAO {
 
 	/**
-	 * クラス定数：データベース接続情報文字列定数群
+	 * クラス定数
 	 */
-	private static final String DB_DRIVER    = "org.postgresql.Driver";
-	private static final String DB_URL       = "jdbc:postgresql:sample";
-	private static final String DB_USER      = "student";
-	private static final String  DB_PASSWORD = "himitu";
+	// データベース接続情報文字列定数群
+	private static final String DB_DRIVER   = "org.postgresql.Driver";
+	private static final String DB_URL      = "jdbc:postgresql:sample";
+	private static final String DB_USER     = "student";
+	private static final String DB_PASSWORD = "himitu";
+	
+	// SQL文字列定数群
+	private static final String PHRASE_ORDER_BY_CODE = "ORDER BY code";
+	private static final String PHRASE_ORDER_BY_PRICE = "ORDER BY price";
+	private static final String PHRASE_ORDER_Z2A = " DESC";
+	
+	private static final String SQL_FIND_ALL = "SELECT * FROM item ";
+	private static final String SQL_FIND_ALL_ORDER_BY_CODE = SQL_FIND_ALL + PHRASE_ORDER_BY_CODE;
+	private static final String SQL_FIND_BY_PRIMARYKEY = SQL_FIND_ALL + "WHERE code = ?";
+	private static final String SQL_FIND_BY_PRICE = SQL_FIND_ALL + "WHERE price <= ? " + PHRASE_ORDER_BY_PRICE;
+	private static final String SQL_SORT_BY_PRICE = SQL_FIND_ALL + PHRASE_ORDER_BY_PRICE;
+	
+	private static final String SQL_INSERT_ITEM = "INSERT INTO item (name, price) VALUES (?, ?)"; 
+	private static final String SQL_UPDATE_ITEM = "UPDATE item SET name = ?, price = ? WHERE code = ?";
+	private static final String SQL_DELETE_ITEM = "DELETE FROM item WHERE code = ?";
+	
+	// メッセージ文字列定数群
+	private static final String MESSAGE_FAIL_LOAD_DRIVER = "ドライバの登録に失敗しました。";
+	private static final String MESSAGE_FAIL_CONNECT_DB = "データベースへの接続に失敗しました。";
+	private static final String MESSAGE_FAIL_FIND_RECORD = "レコードの取得に失敗しました。";
+	private static final String MESSAGE_FAIL_ADD_RECORD = "レコードの追加に失敗しました。";
+	private static final String MESSAGE_FAIL_UPDATE_RECORD = "レコードの更新に失敗しました。";
+	private static final String MESSAGE_FAIL_DELETE_RECORD = "レコードの削除に失敗しました。";
+	
+	
+	
+	/**
+	 * フィールド：データベース接続オブジェクト
+	 */
+	private Connection conn;
 	
 	/**
 	 * コンストラクタ
@@ -30,9 +61,13 @@ public class ItemDAO {
 	public ItemDAO() throws DAOException {
 		try {
 			Class.forName(DB_DRIVER);
+			this.conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-			throw new DAOException("ドライバの登録に失敗しまし。た");
+			throw new DAOException(MESSAGE_FAIL_LOAD_DRIVER);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException(MESSAGE_FAIL_CONNECT_DB);
 		}
 	}
 
@@ -42,11 +77,9 @@ public class ItemDAO {
 	 * @throws DAOException
 	 */
 	public List<ItemBean> findAll() throws DAOException {
-		String sql = "SELECT * FROM item";
-		try (// データベース接続オブジェクトを取得：データベースに接続
-			 Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-			 // SQL実行オブジェクトを取得
-			 PreparedStatement pstmt = con.prepareStatement(sql);
+		// String sql = "SELECT * FROM item";
+		try (// SQL実行オブジェクトを取得
+			 PreparedStatement pstmt = this.conn.prepareStatement(SQL_FIND_ALL_ORDER_BY_CODE);
 			 // SQLの実行と結果セットの取得
 			 ResultSet rs = pstmt.executeQuery();
 			) {
@@ -68,7 +101,7 @@ public class ItemDAO {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new DAOException("レコードの取得に失敗しました。");
+			throw new DAOException(MESSAGE_FAIL_FIND_RECORD);
 		}
 		
 	}
@@ -81,11 +114,9 @@ public class ItemDAO {
 	 */
 	public ItemBean findByPrimaryKey(int code) throws DAOException {
 		// 実行するSQLの設定
-		String sql = "SELECT * FROM item WHERE code = ?";
-		try (// データベースに接続
-			 Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-			 // SQL実行オブジェクトを取得
-			 PreparedStatement pstmt = con.prepareStatement(sql);
+		// String sql = "SELECT * FROM item WHERE code = ?";
+		try (// SQL実行オブジェクトを取得
+			 PreparedStatement pstmt = this.conn.prepareStatement(SQL_FIND_BY_PRIMARYKEY);
 			) {
 			// プレースホルダにデータをバインド
 			pstmt.setInt(1, code);
@@ -103,7 +134,7 @@ public class ItemDAO {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new DAOException("レコードの取得に失敗しました。");
+			throw new DAOException(MESSAGE_FAIL_FIND_RECORD);
 		}
 		
 	}
@@ -116,11 +147,9 @@ public class ItemDAO {
 	 */
 	public List<ItemBean> findByPrice(int upperPrice) throws DAOException {
 		// 実行するSQLの設定
-		String sql = "SELECT * FROM item WHERE price <= ? ORDER BY price";
-		try (// データベースに接続
-			 Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-			 // SQL実行オブジェクトを取得
-			 PreparedStatement pstmt = con.prepareStatement(sql);
+		// String sql = "SELECT * FROM item WHERE price <= ? ORDER BY price";
+		try (// SQL実行オブジェクトを取得
+			 PreparedStatement pstmt = this.conn.prepareStatement(SQL_FIND_BY_PRICE);
 			 ) {
 			// プレースホルダにパラメータをバインド
 			pstmt.setInt(1, upperPrice);
@@ -141,7 +170,7 @@ public class ItemDAO {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new DAOException("レコードの取得に失敗しました。");
+			throw new DAOException(MESSAGE_FAIL_FIND_RECORD);
 		}
 		
 	}
@@ -154,13 +183,11 @@ public class ItemDAO {
 	 */
 	public List<ItemBean> sortByPrice(boolean orderByAsc) throws DAOException {
 		// 実行するSQLを設定
-		String sql = "SELECT * FROM item ORDER BY price";
+		String sql = SQL_SORT_BY_PRICE;
 		// 並べ替えが降順である場合：SQLの並べ替えモードを追加
-		if (!orderByAsc) sql += " DESC";
-		try (// データベースに接続
-			 Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-			 // SQL実行オブジェクトの取得
-			 PreparedStatement pstmt = con.prepareStatement(sql);
+		if (!orderByAsc) sql += PHRASE_ORDER_Z2A;
+		try (// SQL実行オブジェクトの取得
+			 PreparedStatement pstmt = this.conn.prepareStatement(sql);
 			 // SQLの実行と結果セットの取得
 			 ResultSet rs = pstmt.executeQuery();
 			) {
@@ -176,7 +203,7 @@ public class ItemDAO {
 			return list;
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new DAOException("レコードの取得に失敗しました。");
+			throw new DAOException(MESSAGE_FAIL_FIND_RECORD);
 		}
 		
 	}
@@ -188,11 +215,9 @@ public class ItemDAO {
 	 */
 	public void add(ItemBean item) throws DAOException {
 		// 実行するSQLの設定
-		String sql = "INSERT INTO item (name, price) VALUES (?, ?)";
-		try (// データベースに接続
-			 Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-			 // SQL実行オブジェクトの取得
-			 PreparedStatement pstmt = con.prepareStatement(sql);) {
+		// String sql = "INSERT INTO item (name, price) VALUES (?, ?)";
+		try (// SQL実行オブジェクトの取得
+			 PreparedStatement pstmt = this.conn.prepareStatement(SQL_INSERT_ITEM);) {
 			// プレースホルダにデータをバインド
 			pstmt.setString(1, item.getName());
 			pstmt.setInt(2, item.getPrice());
@@ -201,7 +226,7 @@ public class ItemDAO {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new DAOException("レコードの追加に失敗しました。");
+			throw new DAOException(MESSAGE_FAIL_ADD_RECORD);
 		}
 		
 	}
@@ -213,11 +238,9 @@ public class ItemDAO {
 	 */
 	public void update(ItemBean item) throws DAOException {
 		// 実行するSQLの設定
-		String sql = "UPDATE item SET name = ?, price = ? WHERE code = ?";
-		try (// データベースに接続
-			 Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-			 // SQL実行オブジェクトを取得
-			 PreparedStatement pstmt = con.prepareStatement(sql);
+		// String sql = "UPDATE item SET name = ?, price = ? WHERE code = ?";
+		try (// SQL実行オブジェクトを取得
+			 PreparedStatement pstmt =this.conn.prepareStatement(SQL_UPDATE_ITEM);
 			) {
 			// プレースホルダにデータをバインド
 			pstmt.setString(1, item.getName());
@@ -228,7 +251,7 @@ public class ItemDAO {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new DAOException("レコードの更新に失敗しました。");
+			throw new DAOException(MESSAGE_FAIL_UPDATE_RECORD);
 		}
 		
 	}
@@ -240,11 +263,9 @@ public class ItemDAO {
 	 */
 	public void delete(int code) throws DAOException {
 		// 実行するSQLの設定
-		String sql = "DELETE FROM item WHERE code = ?";
-		try (// データベースに接続
-			 Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-			 // SQL実行オブジェクトを取得
-			 PreparedStatement pstmt = con.prepareStatement(sql);
+		// String sql = "DELETE FROM item WHERE code = ?";
+		try (// SQL実行オブジェクトを取得
+			 PreparedStatement pstmt = this.conn.prepareStatement(SQL_DELETE_ITEM);
 			 ) {
 			// プレースホルダにデータをバインド
 			pstmt.setInt(1, code);
@@ -253,7 +274,7 @@ public class ItemDAO {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new DAOException("レコードの削除に失敗しました。");
+			throw new DAOException(MESSAGE_FAIL_DELETE_RECORD);
 		}
 		
 	}
