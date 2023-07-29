@@ -17,7 +17,7 @@ import kadai5.dao.ItemDAO;
 /**
  * Servlet implementation class ItemServlet
  */
-@WebServlet("/ItemServlet")
+@WebServlet("/ItemServlet2")
 public class ItemServlet2 extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
