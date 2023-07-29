@@ -40,6 +40,23 @@ public class ItemServlet2 extends HttpServlet {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("/showItem2.jsp");
 				// 商品一覧画面に遷移
 				dispatcher.forward(request, response);
+			} else if (action.equals("sort")) {
+				// 値段で並べ替える場合
+				// リクエストパラメータからクエリ文字列keyを取得
+				String key = request.getParameter("key");
+				// モデルを使って並べ替えた商品リストを取得
+				ItemDAO dao = new ItemDAO();
+				List<ItemBean> list = null;
+				if (key.equals("price_asc")) {
+					list = dao.sortByPrice(true);
+				} else {
+					list = dao.sortByPrice(false);
+				}
+				// リストをスコープに入れて画面遷移
+				request.setAttribute("items", list);
+				RequestDispatcher dispatcher = request.getRequestDispatcher("/showItem2.jsp");
+				// 商品一覧画面に遷移
+				dispatcher.forward(request, response);
 			}
 			
 		} catch (DAOException e) {

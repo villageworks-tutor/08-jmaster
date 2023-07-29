@@ -68,6 +68,35 @@ public class ItemDAO {
 		}
 		
 	}
+
+
+	public List<ItemBean> sortByPrice(boolean orderByAsc) throws DAOException {
+		// 実行するSQLを設定
+		String sql = "SELECT * FROM item ORDER BY price";
+		// 並べ替えが降順である場合：SQLの並べ替えモードを追加
+		if (!orderByAsc) sql += " DESC";
+		try (// データベースに接続
+			 Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+			 // SQL実行オブジェクトの取得
+			 PreparedStatement pstmt = con.prepareStatement(sql);
+			 // SQLの実行と結果セットの取得
+			 ResultSet rs = pstmt.executeQuery();
+			) {
+			//　結果セットから商品リストへの詰替え
+			List<ItemBean> list = new ArrayList<ItemBean>();
+			while (rs.next()) {
+				int code = rs.getInt("code");
+				String name = rs.getString("name");
+				int price = rs.getInt("price");
+				ItemBean bean = new ItemBean(code, name, price);
+				list.add(bean);
+			}
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの取得に失敗しました。");
+		}
+	}
 	
 	
 	
