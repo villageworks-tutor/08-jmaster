@@ -36,7 +36,11 @@ public class ItemDAO {
 		}
 	}
 
-
+	/**
+	 * 全商品を取得する
+	 * @return List<ItemBean> 全商品のリスト
+	 * @throws DAOException
+	 */
 	public List<ItemBean> findAll() throws DAOException {
 		String sql = "SELECT * FROM item";
 		try (// データベース接続オブジェクトを取得：データベースに接続
@@ -69,7 +73,12 @@ public class ItemDAO {
 		
 	}
 
-
+	/**
+	 * 価格で並べ換える
+	 * @param orderByAsc 昇順の場合はtrue、それ以外はfalse
+	 * @return List<ItemBean> 並べ替えられた商品リスト
+	 * @throws DAOException
+	 */
 	public List<ItemBean> sortByPrice(boolean orderByAsc) throws DAOException {
 		// 実行するSQLを設定
 		String sql = "SELECT * FROM item ORDER BY price";
@@ -95,6 +104,26 @@ public class ItemDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DAOException("レコードの取得に失敗しました。");
+		}
+	}
+
+
+	public void add(ItemBean item) throws DAOException {
+		// 実行するSQLの設定
+		String sql = "INSERT INTO item (name, price) VALUES (?, ?)";
+		try (// データベースに接続
+			 Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+			 // SQL実行オブジェクトの取得
+			 PreparedStatement pstmt = con.prepareStatement(sql);) {
+			// プレースホルダにデータをバインド
+			pstmt.setString(1, item.getName());
+			pstmt.setInt(2, item.getPrice());
+			// SQLの実行
+			pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの追加に失敗しました。");
 		}
 	}
 	

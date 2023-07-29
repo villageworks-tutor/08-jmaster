@@ -35,11 +35,11 @@ public class ItemServlet2 extends HttpServlet {
 				// 初期表示または何らかのエラーがあった場合の強制表示：モデルを使って全商品を取得
 				ItemDAO dao = new ItemDAO();
 				List<ItemBean> list = dao.findAll();
-				// リストをスコープに入れて画面遷移
+				// 商品リストをスコープに登録
 				request.setAttribute("items", list);
-				RequestDispatcher dispatcher = request.getRequestDispatcher("/showItem2.jsp");
-				// 商品一覧画面に遷移
-				dispatcher.forward(request, response);
+				// 遷移先URLを設定して画面遷移
+				String nextPage = "/showItem2.jsp";
+				this.gotoPage(request, response, nextPage);
 			} else if (action.equals("sort")) {
 				// 値段で並べ替える場合
 				// リクエストパラメータからクエリ文字列keyを取得
@@ -52,11 +52,30 @@ public class ItemServlet2 extends HttpServlet {
 				} else {
 					list = dao.sortByPrice(false);
 				}
-				// リストをスコープに入れて画面遷移
+				// 商品リストをスコープに登録
 				request.setAttribute("items", list);
-				RequestDispatcher dispatcher = request.getRequestDispatcher("/showItem2.jsp");
-				// 商品一覧画面に遷移
-				dispatcher.forward(request, response);
+				// 遷移先URLを設定して画面遷移
+				String nextPage = "/showItem2.jsp";
+				this.gotoPage(request, response, nextPage);
+			} else if (action.equals("add")) {
+				// 商品を追加する場合
+				// リクエストパラメータを取得
+				String name = request.getParameter("name");
+				int price = Integer.parseInt(request.getParameter("price"));
+				// 追加する商品のインスタンスを生成
+				ItemBean item = new ItemBean();
+				item.setName(name);
+				item.setPrice(price);
+				// モデルを使って商品を追加
+				ItemDAO dao = new ItemDAO();
+				dao.add(item);
+				// 商品一覧リストを取得
+				List<ItemBean> list = dao.findAll();
+				// 商品一覧リストをスコープに登録
+				request.setAttribute("items", list);
+				// 遷移先URLを設定して画面遷移
+				String nextPage = "/showItem2.jsp";
+				this.gotoPage(request, response, nextPage);
 			}
 			
 		} catch (DAOException e) {
@@ -67,6 +86,22 @@ public class ItemServlet2 extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/errInternal.jsp");
 			dispatcher.forward(request, response);
 		}
+	}
+
+	/**
+	 * 指定されたURLに遷移する
+	 * @param request  HttpServletRequest
+	 * @param response HttpServletResponse
+	 * @param nextPage 遷移先URL
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	private void gotoPage(HttpServletRequest request, HttpServletResponse response, String nextPage) throws ServletException, IOException {
+		// 遷移先URLをもとに遷移実行オブジェクトを取得
+		RequestDispatcher dispatcher = request.getRequestDispatcher(nextPage);
+		// 指定されたURLに遷移
+		dispatcher.forward(request, response);
+		
 	}
 
 	/**
