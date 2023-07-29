@@ -107,7 +107,11 @@ public class ItemDAO {
 		}
 	}
 
-
+	/**
+	 * 商品を追加する
+	 * @param item 追加する商品
+	 * @throws DAOException
+	 */
 	public void add(ItemBean item) throws DAOException {
 		// 実行するSQLの設定
 		String sql = "INSERT INTO item (name, price) VALUES (?, ?)";
@@ -124,6 +128,43 @@ public class ItemDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DAOException("レコードの追加に失敗しました。");
+		}
+	}
+
+	/**
+	 * 指定した価格以下の商品を取得する
+	 * @param upperPrice 価格上限
+	 * @return List<ItemBean> 価格上限以下の商品リスト 
+	 * @throws DAOException
+	 */
+	public List<ItemBean> findByPrice(int upperPrice) throws DAOException {
+		// 実行するSQLの設定
+		String sql = "SELECT * FROM item WHERE price <= ? ORDER BY price";
+		try (// データベースに接続
+			 Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+			 // SQL実行オブジェクトを取得
+			 PreparedStatement pstmt = con.prepareStatement(sql);
+			 ) {
+			// プレースホルダにパラメータをバインド
+			pstmt.setInt(1, upperPrice);
+			try (// SQLの実行と結果セットの取得
+				 ResultSet rs = pstmt.executeQuery();
+				 ) {
+				// 結果セットから商品リストに詰替え
+				List<ItemBean> list = new ArrayList<ItemBean>();
+				while (rs.next()) {
+					int code = rs.getInt("code");
+					String name = rs.getString("name");
+					int price = rs.getInt("price");
+					ItemBean bean = new ItemBean(code, name, price);
+					list.add(bean);
+				}
+				return list;
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの取得に失敗しました。");
 		}
 	}
 	

@@ -76,6 +76,18 @@ public class ItemServlet2 extends HttpServlet {
 				// 遷移先URLを設定して画面遷移
 				String nextPage = "/showItem2.jsp";
 				this.gotoPage(request, response, nextPage);
+			} else if (action.equals("search")) {
+				// 価格で検索する場合
+				// リクエストパラメータを取得
+				int price = Integer.parseInt(request.getParameter("price"));
+				// モデルを使って検索結果の商品リストを取得
+				ItemDAO dao = new ItemDAO();
+				List<ItemBean> list = dao.findByPrice(price);
+				// 商品一覧リストをスコープに登録
+				request.setAttribute("items", list);
+				// 遷移先URLを設定して画面遷移
+				String nextPage = "/showItem2.jsp";
+				this.gotoPage(request, response, nextPage);
 			}
 			
 		} catch (DAOException e) {

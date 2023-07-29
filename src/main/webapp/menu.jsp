@@ -7,8 +7,11 @@
 <!-- 商品追加 -->
 <form action="ItemServlet2" method="post">
 追加：商品名<input type="text" name="name" />
-価格<input type="number" name="price" />を<input type="submit" value="追加" />
+価格<input type="text" name="price" size="5" />を<input type="submit" value="追加" />
 <input type="hidden" name="action" value="add" />
 </form>
-検索：<input type="number" />円以下の商品を<input type="submit" value="検索" /><br />
+<form action="ItemServlet2" method="post">
+検索：<input type="text" name="price" size="5" />円以下の商品を<input type="submit" value="検索" />
+<input type="hidden" name="action" value="search" />
+</form>
 削除：商品番号<input type="number" />番の商品を<input type="submit" value="削除" />
