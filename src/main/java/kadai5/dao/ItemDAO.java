@@ -167,6 +167,26 @@ public class ItemDAO {
 			throw new DAOException("レコードの取得に失敗しました。");
 		}
 	}
+
+	public void delete(int code) throws DAOException {
+		// 実行するSQLの設定
+		String sql = "DELETE FROM item WHERE code = ?";
+		try (// データベースに接続
+			 Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+			 // SQL実行オブジェクトを取得
+			 PreparedStatement pstmt = con.prepareStatement(sql);
+			 ) {
+			// プレースホルダにデータをバインド
+			pstmt.setInt(1, code);
+			// SQLの実行
+			pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの削除に失敗しました。");
+		}
+		
+	}
 	
 	
 	

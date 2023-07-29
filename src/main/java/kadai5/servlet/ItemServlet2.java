@@ -48,8 +48,10 @@ public class ItemServlet2 extends HttpServlet {
 				ItemDAO dao = new ItemDAO();
 				List<ItemBean> list = null;
 				if (key.equals("price_asc")) {
+					// 昇順の場合
 					list = dao.sortByPrice(true);
 				} else {
+					// 降順の場合
 					list = dao.sortByPrice(false);
 				}
 				// 商品リストをスコープに登録
@@ -83,6 +85,20 @@ public class ItemServlet2 extends HttpServlet {
 				// モデルを使って検索結果の商品リストを取得
 				ItemDAO dao = new ItemDAO();
 				List<ItemBean> list = dao.findByPrice(price);
+				// 商品一覧リストをスコープに登録
+				request.setAttribute("items", list);
+				// 遷移先URLを設定して画面遷移
+				String nextPage = "/showItem2.jsp";
+				this.gotoPage(request, response, nextPage);
+			} else if (action.equals("delete")) {
+				// 指定された商品番号の商品を削除する場合
+				// リクエストパラメータを取得
+				int code = Integer.parseInt(request.getParameter("code"));
+				// モデルを使って取得した商品番号の商品を削除
+				ItemDAO dao  = new ItemDAO();
+				dao.delete(code);
+				// 商品一覧リストを取得
+				List<ItemBean> list = dao.findAll();
 				// 商品一覧リストをスコープに登録
 				request.setAttribute("items", list);
 				// 遷移先URLを設定して画面遷移
