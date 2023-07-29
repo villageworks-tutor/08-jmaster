@@ -77,7 +77,6 @@ public class ItemDAO {
 	 * @throws DAOException
 	 */
 	public List<ItemBean> findAll() throws DAOException {
-		// String sql = "SELECT * FROM item";
 		try (// SQL実行オブジェクトを取得
 			 PreparedStatement pstmt = this.conn.prepareStatement(SQL_FIND_ALL_ORDER_BY_CODE);
 			 // SQLの実行と結果セットの取得
@@ -113,8 +112,6 @@ public class ItemDAO {
 	 * @throws DAOException
 	 */
 	public ItemBean findByPrimaryKey(int code) throws DAOException {
-		// 実行するSQLの設定
-		// String sql = "SELECT * FROM item WHERE code = ?";
 		try (// SQL実行オブジェクトを取得
 			 PreparedStatement pstmt = this.conn.prepareStatement(SQL_FIND_BY_PRIMARYKEY);
 			) {
@@ -146,8 +143,6 @@ public class ItemDAO {
 	 * @throws DAOException
 	 */
 	public List<ItemBean> findByPrice(int upperPrice) throws DAOException {
-		// 実行するSQLの設定
-		// String sql = "SELECT * FROM item WHERE price <= ? ORDER BY price";
 		try (// SQL実行オブジェクトを取得
 			 PreparedStatement pstmt = this.conn.prepareStatement(SQL_FIND_BY_PRICE);
 			 ) {
@@ -214,8 +209,6 @@ public class ItemDAO {
 	 * @throws DAOException
 	 */
 	public void add(ItemBean item) throws DAOException {
-		// 実行するSQLの設定
-		// String sql = "INSERT INTO item (name, price) VALUES (?, ?)";
 		try (// SQL実行オブジェクトの取得
 			 PreparedStatement pstmt = this.conn.prepareStatement(SQL_INSERT_ITEM);) {
 			// プレースホルダにデータをバインド
@@ -237,8 +230,6 @@ public class ItemDAO {
 	 * @throws DAOException
 	 */
 	public void update(ItemBean item) throws DAOException {
-		// 実行するSQLの設定
-		// String sql = "UPDATE item SET name = ?, price = ? WHERE code = ?";
 		try (// SQL実行オブジェクトを取得
 			 PreparedStatement pstmt =this.conn.prepareStatement(SQL_UPDATE_ITEM);
 			) {
@@ -262,8 +253,6 @@ public class ItemDAO {
 	 * @throws DAOException
 	 */
 	public void delete(int code) throws DAOException {
-		// 実行するSQLの設定
-		// String sql = "DELETE FROM item WHERE code = ?";
 		try (// SQL実行オブジェクトを取得
 			 PreparedStatement pstmt = this.conn.prepareStatement(SQL_DELETE_ITEM);
 			 ) {
