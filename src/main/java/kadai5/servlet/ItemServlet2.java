@@ -104,6 +104,9 @@ public class ItemServlet2 extends HttpServlet {
 				// 遷移先URLを設定して画面遷移
 				String nextPage = "/showItem2.jsp";
 				this.gotoPage(request, response, nextPage);
+			} else {
+				request.setAttribute("message", "正しく操作してください。");
+				this.gotoPage(request, response, "/errInternal.jsp");
 			}
 			
 		} catch (DAOException e) {
@@ -111,8 +114,7 @@ public class ItemServlet2 extends HttpServlet {
 			// スコープにメッセージを登録
 			request.setAttribute("message", "内部エラーが発生しました。");
 			// エラー画面に遷移
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/errInternal.jsp");
-			dispatcher.forward(request, response);
+			this.gotoPage(request, response, "/errInternal.jsp");
 		}
 	}
 
