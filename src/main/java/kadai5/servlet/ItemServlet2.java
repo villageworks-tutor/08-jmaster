@@ -80,9 +80,20 @@ public class ItemServlet2 extends HttpServlet {
 				this.gotoPage(request, response, nextPage);
 			} else if (action.equals("search")) {
 				// 価格で検索する場合
-				// リクエストパラメータを取得：必須入力という前提でのコーディング（エラーは考慮しない）
-				int minPrice = Integer.parseInt(request.getParameter("minPrice"));
-				int maxPrice = Integer.parseInt(request.getParameter("maxPrice"));
+				// リクエストパラメータを取得
+				String minPriceString = request.getParameter("minPrice");
+				String maxPriceString = request.getParameter("maxPrice");
+				// 価格の下限値と上限値の初期化
+				int minPrice = -1;
+				int maxPrice = -1;
+				// 価格の下限値と上限値のデータ型変換：変換できない場合は初期値（-1）のまま → DAO側で負数の価格のチェックを実施しその結果によってSQLを分岐する
+				if (!(minPriceString == null || minPriceString.isEmpty())) {
+					minPrice = Integer.parseInt(minPriceString);
+				}
+				if (!(maxPriceString == null || maxPriceString.isEmpty())) {
+					maxPrice = Integer.parseInt(maxPriceString);
+				}
+				
 				// モデルを使って検索結果の商品リストを取得
 				ItemDAO dao = new ItemDAO();
 				List<ItemBean> list = dao.findByPrice(minPrice, maxPrice);
