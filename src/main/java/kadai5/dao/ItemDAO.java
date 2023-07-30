@@ -33,7 +33,6 @@ public class ItemDAO {
 	private static final String SQL_FIND_ALL_ORDER_BY_CODE = SQL_FIND_ALL + PHRASE_ORDER_BY_CODE;
 	private static final String SQL_FIND_BY_PRIMARYKEY = SQL_FIND_ALL + "WHERE code = ?";
 	private static final String SQL_FIND_BY_PRICE = SQL_FIND_ALL + "WHERE price <= ? " + PHRASE_ORDER_BY_PRICE;
-	private static final String SQL_FIND_BY_PRICE_IN_RANGE = SQL_FIND_ALL + "WHERE price BETWEEN ? AND ?";
 	private static final String SQL_SORT_BY_PRICE = SQL_FIND_ALL + PHRASE_ORDER_BY_PRICE;
 	
 	private static final String SQL_INSERT_ITEM = "INSERT INTO item (name, price) VALUES (?, ?)"; 
@@ -177,12 +176,20 @@ public class ItemDAO {
 	 * @throws DAOException
 	 */
 	public List<ItemBean> findByPrice(int lowerPrice, int upperPrice) throws DAOException {
+		// 引数の負数チェックによって設定するSQLを分岐
+		String sql = this.generateCriteriaInPriceRange(lowerPrice, upperPrice);
 		try (// SQL実行オブジェクトを取得
-			 PreparedStatement pstmt = this.conn.prepareStatement(SQL_FIND_BY_PRICE_IN_RANGE);
+			 PreparedStatement pstmt = this.conn.prepareStatement(sql);
 			 ) {
 			// プレースホルダにデータをバインド
-			pstmt.setInt(1, lowerPrice);
-			pstmt.setInt(2, upperPrice);
+			if (lowerPrice >= 0 && upperPrice >= 0) {
+				pstmt.setInt(1, lowerPrice);
+				pstmt.setInt(2, upperPrice);
+			} else if (lowerPrice >= 0 && upperPrice < 0) {
+				pstmt.setInt(1, lowerPrice);
+			} else if (lowerPrice < 0 && upperPrice >= 0) {
+				pstmt.setInt(1, upperPrice);
+			}
 			try (// SQLの実行と結果セットの取得
 				 ResultSet rs = pstmt.executeQuery();
 				 ) {
@@ -301,6 +308,33 @@ public class ItemDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DAOException(MESSAGE_FAIL_DELETE_RECORD);
+		}
+		
+	}
+	
+	/**
+	 * 下限値と上限値から価格の範囲検索を実行するSQL文字列を生成する
+	 * @param lowerPrice 価格の下限値
+	 * @param upperPrice 価格の上限値
+	 * @return 価格の範囲検索を実行するSQL文字列
+	 */
+	protected String generateCriteriaInPriceRange(int lowerPrice, int upperPrice) {
+		final String PREPARED_SQL_FIND_PRICE_BETWEEN  = SQL_FIND_ALL + "WHERE price BETWEEN ? AND ? " + PHRASE_ORDER_BY_CODE;
+		final String PREPARED_SQL_FIND_PRICE_GE_LOWER = SQL_FIND_ALL + "WHERE price >= ? " + PHRASE_ORDER_BY_CODE;
+		final String PREPARED_SQL_FIND_PRICE_LE_UPPER = SQL_FIND_ALL + "WHERE price <= ? " + PHRASE_ORDER_BY_CODE;
+		
+		if (lowerPrice >= 0 && upperPrice >= 0) {
+			// 下限値上限値ともに正の整数が指定されている場合
+			return PREPARED_SQL_FIND_PRICE_BETWEEN;
+		} else if (lowerPrice >= 0 && upperPrice < 0) {
+			// 下限値だけに正の整数が指定されている場合
+			return PREPARED_SQL_FIND_PRICE_GE_LOWER;
+		} else if (lowerPrice < 0 && upperPrice >= 0) {
+			// 上限値だけに正の整数が指定されている場合
+			return PREPARED_SQL_FIND_PRICE_LE_UPPER;
+		} else {
+			// 上記以外の場合
+			return SQL_FIND_ALL_ORDER_BY_CODE;
 		}
 		
 	}
