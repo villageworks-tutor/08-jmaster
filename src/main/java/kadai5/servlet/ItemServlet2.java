@@ -80,11 +80,12 @@ public class ItemServlet2 extends HttpServlet {
 				this.gotoPage(request, response, nextPage);
 			} else if (action.equals("search")) {
 				// 価格で検索する場合
-				// リクエストパラメータを取得
-				int price = Integer.parseInt(request.getParameter("price"));
+				// リクエストパラメータを取得：必須入力という前提でのコーディング（エラーは考慮しない）
+				int minPrice = Integer.parseInt(request.getParameter("minPrice"));
+				int maxPrice = Integer.parseInt(request.getParameter("maxPrice"));
 				// モデルを使って検索結果の商品リストを取得
 				ItemDAO dao = new ItemDAO();
-				List<ItemBean> list = dao.findByPrice(price);
+				List<ItemBean> list = dao.findByPrice(minPrice, maxPrice);
 				// 商品一覧リストをスコープに登録
 				request.setAttribute("items", list);
 				// 遷移先URLを設定して画面遷移
