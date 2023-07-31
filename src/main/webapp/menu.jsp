@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- 価格による並べ替え -->
 ソート：<a href="ItemServlet2?action=sort&key=price_asc">値段の低い順</a>
 <a href="ItemServlet2?action=sort&key=price_desc">値段の高い順</a><br />
@@ -11,7 +12,7 @@
 <input type="hidden" name="action" value="add" />
 </form>
 <form action="ItemServlet2" method="post">
-検索：商品名<input type="text" name="name" size="5" /> | 価格<input type="text" name="minPrice" size="5" />円以上 <input type="text" name="maxPrice" size="5" />円以下の商品を<input type="submit" value="検索" />
+検索：商品名<input type="text" name="name" value="${sessionScope.name}" size="5" /> | 価格<input type="text" name="minPrice" value="${sessionScope.minPrice}" size="5" />円以上 <input type="text" name="maxPrice" value="${sessionScope.maxPrice}" size="5" />円以下の商品を<input type="submit" value="検索" />
 <input type="hidden" name="action" value="search" />
 </form>
 <form action="ItemServlet2" method="post">

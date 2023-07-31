@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import kadai5.bean.ItemBean;
 import kadai5.dao.DAOException;
@@ -89,6 +90,12 @@ public class ItemServlet2 extends HttpServlet {
 				List<ItemBean> list = dao.findByNameAndPrice(name, minPrice, maxPrice);
 				// 商品一覧リストをスコープに登録
 				request.setAttribute("items", list);
+				
+				HttpSession session = request.getSession();
+				session.setAttribute("name", name);
+				session.setAttribute("minPrice", minPrice);
+				session.setAttribute("maxPrice", maxPrice);
+				
 				// 遷移先URLを設定して画面遷移
 				String nextPage = "/showItem2.jsp";
 				this.gotoPage(request, response, nextPage);
