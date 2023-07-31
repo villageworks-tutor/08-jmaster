@@ -338,5 +338,64 @@ public class ItemDAO {
 		}
 		
 	}
+
+	/**
+	 * 商品名、価格によって商品を検索する
+	 * @param name     商品名
+	 * @param minPrice 価格の下限
+	 * @param maxPrice 価格の上限
+	 * @return List<ItemBean> 商品リスト
+	 * @throws DAOException
+	 */
+	public List<ItemBean> findByNameAndPrice(String name, String minPrice, String maxPrice) throws DAOException {
+		// 実行するSQLの設定：WHERE句の先頭の条件に恒真式「1=1」を記述しているのは、商品名、価格の条件式を統一して「AND」で連結することが目的
+		String sql = SQL_FIND_ALL + "WHERE 1=1 ";
+		if (!(name == null || name.isEmpty())) {
+			sql += "AND name LIKE ? ";
+		}
+		if (!(minPrice == null || minPrice.isEmpty())) {
+			sql += "AND price >= ? ";
+		}
+		if (!(maxPrice == null || maxPrice.isEmpty())) {
+			sql += "AND price <= ?";
+		}
+		
+		try (// SQL実行オブジェクトを取得
+			 PreparedStatement pstmt = this.conn.prepareStatement(sql);
+			 ) {
+			// プレースホルダにデータをバインド
+			int count = 0; // プレースホルダのカウント
+			if (!(name == null || name.isEmpty())) {
+				count++;
+				pstmt.setString(count, "%" + name + "%");
+			}
+			if (!(minPrice == null || minPrice.isEmpty())) {
+				count++;
+				pstmt.setInt(count, Integer.parseInt(minPrice));
+			}
+			if (!(maxPrice == null || maxPrice.isEmpty())) {
+				count++;
+				pstmt.setInt(count, Integer.parseInt(maxPrice));
+			}
+			try (// SQLの実行と結果セットの取得
+				 ResultSet rs = pstmt.executeQuery();) {
+				// 結果セットから商品リストへの詰替え
+				List<ItemBean> list = new ArrayList<ItemBean>();
+				while (rs.next()) {
+					int code = rs.getInt("code");
+					String itemName = rs.getString("name");
+					int price = rs.getInt("price");
+					ItemBean bean = new ItemBean(code, itemName, price);
+					list.add(bean);
+				}
+				return list;
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException(MESSAGE_FAIL_FIND_RECORD);
+		}
+		
+	}
 	
 }
