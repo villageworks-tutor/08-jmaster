@@ -81,22 +81,12 @@ public class ItemServlet2 extends HttpServlet {
 			} else if (action.equals("search")) {
 				// 価格で検索する場合
 				// リクエストパラメータを取得
-				String minPriceString = request.getParameter("minPrice");
-				String maxPriceString = request.getParameter("maxPrice");
-				// 価格の下限値と上限値の初期化
-				int minPrice = -1;
-				int maxPrice = -1;
-				// 価格の下限値と上限値のデータ型変換：変換できない場合は初期値（-1）のまま → DAO側で負数の価格のチェックを実施しその結果によってSQLを分岐する
-				if (!(minPriceString == null || minPriceString.isEmpty())) {
-					minPrice = Integer.parseInt(minPriceString);
-				}
-				if (!(maxPriceString == null || maxPriceString.isEmpty())) {
-					maxPrice = Integer.parseInt(maxPriceString);
-				}
-				
+				String name = request.getParameter("name");
+				String minPrice = request.getParameter("minPrice");
+				String maxPrice = request.getParameter("maxPrice");
 				// モデルを使って検索結果の商品リストを取得
 				ItemDAO dao = new ItemDAO();
-				List<ItemBean> list = dao.findByPrice(minPrice, maxPrice);
+				List<ItemBean> list = dao.findByNameAndPrice(name, minPrice, maxPrice);
 				// 商品一覧リストをスコープに登録
 				request.setAttribute("items", list);
 				// 遷移先URLを設定して画面遷移
