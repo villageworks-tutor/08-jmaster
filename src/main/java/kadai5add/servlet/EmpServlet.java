@@ -30,7 +30,9 @@ public class EmpServlet extends HttpServlet {
 		// 処理分岐用のリクエストパラメータを取得
 		String action = request.getParameter("action");
 		// 処理の分岐
-		if (action.equals("step1")) {
+		if (action == null || action.isEmpty()) {
+			this.gotoPage(request, response, "emmp.jsp");
+		} else if (action.equals("step1")) {
 			try {
 				// 入力されたリクエストパラメータを取得
 				int lowerAge = Integer.parseInt(request.getParameter("lowerAge"));
@@ -53,7 +55,28 @@ public class EmpServlet extends HttpServlet {
 				// 画面遷移
 				this.gotoPage(request, response, "/emp.jsp");
 			} catch (NumberFormatException e) {
+				e.printStackTrace();
 				this.gotoError(request, response, "正しい年齢を入力してください。");
+			} catch (DAOException e) {
+				e.printStackTrace();
+				this.gotoError(request, response, e.getMessage());
+			}
+		} else if (action.equals("step2")) {
+			try {
+				// 入力されたリクエストパラメータを取得
+				int count = Integer.parseInt(request.getParameter("count"));
+				// 入力値検査・範囲チェック
+				if (count < 0) {
+					this.gotoError(request, response, "正しい人数を入力してください。");
+					return;
+				}
+				EmpDAO dao = new EmpDAO();
+				List<EmpBean> list = dao.findByOrderByAgeDESC(count);
+				request.setAttribute("empList", list);
+				this.gotoPage(request, response, "/emp.jsp");
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+				this.gotoError(request, response, "人数を入力してください。");
 			} catch (DAOException e) {
 				e.printStackTrace();
 				this.gotoError(request, response, e.getMessage());
