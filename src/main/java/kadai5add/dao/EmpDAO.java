@@ -84,4 +84,31 @@ public class EmpDAO {
 		
 	}
 
+	public List<EmpBean> findByOrderByAgeDESC(int count) throws DAOException {
+		// 実行するSQLの設定
+		String sql = "SELECT * FROM emp ORDER BY age DESC LIMIT ?";
+		try (// SQL実行オブジェクトを取得
+			 PreparedStatement pstmt = this.conn.prepareStatement(sql);) {
+			// プレースホルダにデータをバインド
+			pstmt.setInt(1, count);
+			try (// SQLの実行と結果セットの取得
+				 ResultSet rs = pstmt.executeQuery();) {
+				// 結果セットから従業員リストへの詰替え
+				List<EmpBean> list  = new ArrayList<EmpBean>();
+				while (rs.next()) {
+					EmpBean bean = new EmpBean();
+					bean.setCode(rs.getInt("code"));
+					bean.setName(rs.getString("name"));
+					bean.setAge(rs.getInt("age"));
+					bean.setTel(rs.getString("tel"));
+					list.add(bean);
+				}
+				return list;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException("レコードの取得に失敗しました。");
+		}
+	}
+
 }
