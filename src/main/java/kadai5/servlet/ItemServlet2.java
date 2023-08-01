@@ -43,11 +43,19 @@ public class ItemServlet2 extends HttpServlet {
 				this.gotoPage(request, response, nextPage);
 			} else if (action.equals("sort")) {
 				// 値段で並べ替える場合
+				// セッションからパラメータを取得
+				HttpSession session  = request.getSession();
+				String name = (String) session.getAttribute("name");
+				String minPrice = (String) session.getAttribute("minPrice");
+				String maxPrice = (String) session.getAttribute("mazPrice");
+				
 				// リクエストパラメータからクエリ文字列keyを取得
 				String key = request.getParameter("key");
 				// モデルを使って並べ替えた商品リストを取得
 				ItemDAO dao = new ItemDAO();
 				List<ItemBean> list = null;
+				list = dao.findByNameAndPrice(name, minPrice, maxPrice, key);
+				/*
 				if (key.equals("price_asc")) {
 					// 昇順の場合
 					list = dao.sortByPrice(true);
@@ -55,6 +63,7 @@ public class ItemServlet2 extends HttpServlet {
 					// 降順の場合
 					list = dao.sortByPrice(false);
 				}
+				*/
 				// 商品リストをスコープに登録
 				request.setAttribute("items", list);
 				// 遷移先URLを設定して画面遷移

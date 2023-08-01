@@ -397,5 +397,59 @@ public class ItemDAO {
 		}
 		
 	}
+
+	public List<ItemBean> findByNameAndPrice(String name, String minPrice, String maxPrice, String sort) throws DAOException {
+		String sql = SQL_FIND_ALL + "WHERE 1=1 ";
+		if (!(name == null || name.isEmpty())) {
+			sql += "AND name LIKE ? ";
+		}
+		if (!(minPrice == null || minPrice.isEmpty())) {
+			sql += "AND price >= ? ";
+		}
+		if (!(maxPrice == null || maxPrice.isEmpty())) {
+			sql += "AND price <= ?";
+		}
+		if (sort.equals("price_asc")) {
+			sql += PHRASE_ORDER_BY_PRICE;
+		} else {
+			sql += PHRASE_ORDER_BY_PRICE + " DESC";
+		}
+		
+		try (// SQL実行オブジェクトを取得
+			 PreparedStatement pstmt = this.conn.prepareStatement(sql);
+			 ) {
+			// プレースホルダにデータをバインド
+			int count = 0; // プレースホルダのカウント
+			if (!(name == null || name.isEmpty())) {
+				count++;
+				pstmt.setString(count, "%" + name + "%");
+			}
+			if (!(minPrice == null || minPrice.isEmpty())) {
+				count++;
+				pstmt.setInt(count, Integer.parseInt(minPrice));
+			}
+			if (!(maxPrice == null || maxPrice.isEmpty())) {
+				count++;
+				pstmt.setInt(count, Integer.parseInt(maxPrice));
+			}
+			try (// SQLの実行と結果セットの取得
+				 ResultSet rs = pstmt.executeQuery();) {
+				// 結果セットから商品リストへの詰替え
+				List<ItemBean> list = new ArrayList<ItemBean>();
+				while (rs.next()) {
+					int code = rs.getInt("code");
+					String itemName = rs.getString("name");
+					int price = rs.getInt("price");
+					ItemBean bean = new ItemBean(code, itemName, price);
+					list.add(bean);
+				}
+				return list;
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DAOException(MESSAGE_FAIL_FIND_RECORD);
+		}
+	}
 	
 }
